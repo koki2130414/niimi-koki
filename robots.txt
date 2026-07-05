@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://koki2130414.github.io/niimi-koki/sitemap.xml
