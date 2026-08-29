@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ja"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ブログ｜新見康樹｜うつ病・心理学・農業・教育・サッカー</title>
+<meta name="description" content="新見康樹のブログ。うつ病からの回復、心理学、農業・教育・サッカーの現場で考えたことを書いています。">
+<meta name="keywords" content="新見康樹,ブログ,うつ病,心理学,傾聴,農業,教育,サッカー,栃木">
+<meta name="author" content="新見康樹">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://koki213.com/blog/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://koki213.com/blog/">
+<meta property="og:title" content="ブログ｜新見康樹">
+<meta property="og:description" content="うつ病からの回復、心理学、農業・教育・サッカーの現場で考えたこと。">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;600;800&family=Noto+Sans+JP:wght@300;400;500;700&family=Cormorant+Garamond:ital,wght@0,500;1,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav class="nav" id="nav">
+  <div class="nav-logo"><a href="../index.html">新見康樹</a></div>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="../index.html#about">About</a></li>
+    <li><a href="../index.html#story">Story</a></li>
+    <li><a href="../index.html#pickup">Activities</a></li>
+    <li><a href="../soudan.html">ご相談</a></li>
+    <li><a href="index.html" class="current">ブログ</a></li>
+    <li><a href="../index.html#sns">SNS</a></li>
+  </ul>
+  <a class="nav-cta" href="https://timerex.net/s/koki04140426_0fba/1d0c1131" target="_blank" rel="noopener">面談予約</a>
+  <button class="nav-toggle" id="navToggle" aria-label="メニュー"><span></span><span></span><span></span></button>
+</nav>
+
+<header class="page-head">
+  <div class="wrap narrow">
+    <span class="en">BLOG</span>
+    <h1>考えたことを、<br>書きとめています。</h1>
+    <p class="lead">うつ病からの回復、心理学、田んぼと子どもたちの現場で気づいたこと。等身大の言葉で書いています。</p>
+  </div>
+</header>
+
+<main class="list-sec">
+  <div class="wrap narrow">
+
+    <!-- ▼▼ 記事はここに増やしていきます（新しい順に上へ） ▼▼ -->
+    <div class="post-list">
+
+      <a class="post" href="utsu-kara-soudan.html">
+        <span class="date">2026.08.29</span>
+        <h2>うつ病を経験した僕が、人の話を聴く側になるまで</h2>
+        <p>大学4年生でうつ病になり、時間が止まった日々を過ごしました。そこから何が僕を動かしたのか、そして今なぜ相談を受けているのかを書きます。</p>
+        <div class="tags"><span class="tag">うつ病</span><span class="tag">回復</span><span class="tag">農業</span></div>
+      </a>
+
+    </div>
+    <!-- ▲▲ 記事ここまで ▲▲ -->
+
+    <div class="empty-note">
+      <p>心理学の解説記事は <a href="https://note.com/koki213" target="_blank" rel="noopener">note</a> でも配信しています。あわせてどうぞ。</p>
+    </div>
+
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <a class="f-back" href="../index.html">← トップページへ戻る</a>
+    <div class="f-name">新見康樹</div>
+    <div class="f-copy">© 2026 Koki Niimi. All rights reserved.</div>
+  </div>
+</footer>
+
+<script>
+const toggle = document.getElementById('navToggle');
+const links  = document.getElementById('navLinks');
+toggle.addEventListener('click', () => { toggle.classList.toggle('open'); links.classList.toggle('open'); });
+links.querySelectorAll('a').forEach(a => a.addEventListener('click', () => { toggle.classList.remove('open'); links.classList.remove('open'); }));
+window.addEventListener('scroll', () => {
+  document.getElementById('nav').style.background = window.scrollY > 60 ? 'rgba(11,31,51,.97)' : 'rgba(11,31,51,.92)';
+});
+</script>
+
+</body></html>
