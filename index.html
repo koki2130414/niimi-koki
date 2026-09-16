@@ -388,6 +388,18 @@ footer .f-copy{font-size:11px;color:rgba(255,255,255,.25);letter-spacing:.1em;}
 .bz-mini .bz-logo{font-size:28px;margin-bottom:9px;}
 .bz-mini .bz-vol{font-size:9.5px;letter-spacing:.26em;margin-bottom:0;}
 @media(max-width:880px){.bz-card{padding:36px 26px;}}
+/* ===== カルーセル：3Dカバーフロー ===== */
+.carousel-track-outer{perspective:1400px;perspective-origin:50% 50%;}
+.carousel-track{transform-style:preserve-3d;transition:transform .8s cubic-bezier(.22,1,.32,1);}
+.carousel-card{
+  transition:transform .8s cubic-bezier(.22,1,.32,1),opacity .8s ease,filter .8s ease;
+  transform-origin:center center;backface-visibility:hidden;
+}
+/* JSがtransformを直接書くので、ホバーの浮き上がりは変数で渡す */
+.carousel-card:hover{--lift:-6px;}
+@media(prefers-reduced-motion:reduce){
+  .carousel-track,.carousel-card{transition:none!important;}
+}
 </style>
 </head>
 <body>
@@ -886,21 +898,38 @@ links.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
   links.classList.remove('open');
 }));
 
-// Carousel
+// Carousel（3Dカバーフロー）
 const track = document.getElementById('carouselTrack');
-const cards  = track.querySelectorAll('.carousel-card');
+const cards  = [...track.querySelectorAll('.carousel-card')];
 let current  = 0;
 const cardW  = () => cards[0].offsetWidth + 24;
 const maxIdx = () => Math.max(0, cards.length - Math.floor(track.parentElement.offsetWidth / cardW()));
 
+function renderCarousel(){
+  track.style.transform = `translateX(-${current * cardW()}px)`;
+  cards.forEach((el, i) => {
+    const d   = i - current;
+    const rot = Math.max(-42, Math.min(42, -d * 15));
+    const z   = -Math.abs(d) * 90;
+    el.style.transform = `perspective(1400px) rotateY(${rot}deg) translateZ(${z}px) translateY(var(--lift,0px))`;
+    el.style.opacity   = Math.max(.35, 1 - Math.abs(d) * .22);
+    el.style.filter    = `brightness(${Math.max(.55, 1 - Math.abs(d) * .16)})`;
+  });
+}
+
 document.getElementById('nextBtn').addEventListener('click', () => {
   current = Math.min(current + 1, maxIdx());
-  track.style.transform = `translateX(-${current * cardW()}px)`;
+  renderCarousel();
 });
 document.getElementById('prevBtn').addEventListener('click', () => {
   current = Math.max(current - 1, 0);
-  track.style.transform = `translateX(-${current * cardW()}px)`;
+  renderCarousel();
 });
+window.addEventListener('resize', () => {
+  current = Math.min(current, maxIdx());
+  renderCarousel();
+});
+renderCarousel();
 </script>
 
 </body></html>
