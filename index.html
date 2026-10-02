@@ -17,6 +17,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
 <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;600;800&amp;family=Noto+Sans+JP:wght@300;400;500;700&amp;family=Cormorant+Garamond:ital,wght@0,500;1,500&amp;display=swap" rel="stylesheet">
+<script>document.documentElement.classList.add('js-anim');</script>
 <style>
 :root{
   --navy:#0B1F33;
@@ -399,6 +400,111 @@ footer .f-copy{font-size:11px;color:rgba(255,255,255,.25);letter-spacing:.1em;}
 .carousel-card:hover{--lift:-6px;}
 @media(prefers-reduced-motion:reduce){
   .carousel-track,.carousel-card{transition:none!important;}
+}
+/* ===== モーション強化 ===== */
+/* JSが動いたときだけ要素を隠す。JSが止まっても本文は必ず読める。 */
+html.js-anim [data-anim]{opacity:0;will-change:transform,opacity;}
+html.js-anim [data-anim].show{will-change:auto;}
+
+/* 下からせり上がる */
+html.js-anim [data-anim="up"]{transform:translateY(62px) scale(.97);
+  transition:opacity .85s ease,transform 1s cubic-bezier(.16,1,.3,1);}
+html.js-anim [data-anim="up"].show{opacity:1;transform:none;}
+
+/* 奥から起き上がる（3D） */
+html.js-anim [data-anim="tilt"]{transform:perspective(1100px) rotateX(18deg) translateY(62px);
+  transform-origin:50% 100%;
+  transition:opacity .8s ease,transform 1.05s cubic-bezier(.16,1,.3,1);}
+html.js-anim [data-anim="tilt"].show{opacity:1;transform:none;}
+
+/* 写真が下から開く＋ゆっくり引く
+   ※ clip-path は必ず「中の子要素」にかける。監視している箱自体に
+     かけると IntersectionObserver が交差0%と判定し、二度と発火しない。 */
+html.js-anim [data-anim="wipe"]{opacity:1;overflow:hidden;}
+html.js-anim [data-anim="wipe"]>*{clip-path:inset(0 0 100% 0);transform:scale(1.14);
+  transition:clip-path 1.2s cubic-bezier(.16,1,.3,1),transform 1.7s cubic-bezier(.16,1,.3,1);}
+html.js-anim [data-anim="wipe"].show>*{clip-path:inset(0 0 0 0);transform:scale(1);}
+
+/* 中の要素が順番に出てくる */
+html.js-anim [data-anim="seq"]{opacity:1;}
+html.js-anim [data-anim="seq"]>*{opacity:0;transform:translateY(34px);
+  transition:opacity .7s ease,transform .85s cubic-bezier(.16,1,.3,1);
+  transition-delay:calc(var(--i,0) * 95ms);}
+html.js-anim [data-anim="seq"].show>*{opacity:1;transform:none;}
+html.js-anim [data-anim="seq"]>.has-ln{opacity:1;transform:none;transition:none;}
+
+/* 見出しを1行ずつ下から立ち上げる */
+.ln{display:block;overflow:hidden;padding-bottom:.1em;margin-bottom:-.1em;}
+.ln>i{display:block;font-style:inherit;transform:translateY(118%);opacity:0;
+  transition:transform 1.05s cubic-bezier(.16,1,.3,1),opacity .7s ease;
+  transition-delay:calc(var(--l,0) * 110ms);}
+.show .ln>i,.ln.show>i{transform:none;opacity:1;}
+
+/* セクションラベルの横線が伸びる */
+html.js-anim .section-label::before{transform:scaleX(0);transform-origin:left;
+  transition:transform .9s cubic-bezier(.16,1,.3,1) .15s;}
+html.js-anim .show .section-label::before,
+html.js-anim .section-label.show::before{transform:scaleX(1);}
+
+/* 読み進みバー */
+.scroll-prog{position:fixed;top:0;left:0;height:2px;width:0;z-index:1200;
+  background:linear-gradient(90deg,var(--sky-deep),var(--sky));
+  box-shadow:0 0 14px rgba(79,195,232,.85);pointer-events:none;}
+
+/* 最初の幕 */
+.curtain{position:fixed;inset:0;background:#0B1F33;z-index:2000;pointer-events:none;
+  transition:transform 1.15s cubic-bezier(.76,0,.24,1);}
+body.loaded .curtain{transform:translateY(-101%);}
+
+/* ヒーローの登場 */
+html.js-anim .hero-content>*{opacity:0;transform:translateY(42px);filter:blur(9px);}
+html.js-anim body.loaded .hero-content>*{opacity:1;transform:none;filter:none;
+  transition:opacity 1s ease,transform 1.2s cubic-bezier(.16,1,.3,1),filter 1s ease;
+  transition-delay:calc(.45s + var(--i,0) * .13s);}
+html.js-anim body.loaded .hero-title{opacity:1;filter:none;transform:none;transition:none;}
+
+/* ===== ホバーの反応 ===== */
+.carousel-card-img img{transition:transform .9s cubic-bezier(.16,1,.3,1);}
+.carousel-card:hover .carousel-card-img img{transform:scale(1.09);}
+.sns-card{transition:transform .45s cubic-bezier(.16,1,.3,1),box-shadow .45s ease,border-color .3s;}
+.sns-card:hover{transform:translateY(-9px) scale(1.02);box-shadow:0 20px 54px rgba(0,0,0,.45);}
+.mvv-card,.t-item{transition:transform .45s cubic-bezier(.16,1,.3,1),box-shadow .45s ease;}
+.mvv-card:hover,.t-item:hover{transform:translateY(-6px);box-shadow:0 16px 44px rgba(0,0,0,.38);}
+
+/* ボタンに光が走る */
+.btn-primary,.a-btn-primary,.nav-cta{position:relative;overflow:hidden;}
+.btn-primary::after,.a-btn-primary::after,.nav-cta::after{
+  content:'';position:absolute;top:0;left:-140%;width:55%;height:100%;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.5),transparent);
+  transform:skewX(-20deg);transition:left .8s ease;pointer-events:none;}
+.btn-primary:hover::after,.a-btn-primary:hover::after,.nav-cta:hover::after{left:150%;}
+
+/* ナビの下線が左から引かれる */
+.nav-links a{position:relative;}
+.nav-links a::after{content:'';position:absolute;left:0;bottom:-7px;width:100%;height:1px;
+  background:var(--sky);transform:scaleX(0);transform-origin:right;
+  transition:transform .45s cubic-bezier(.16,1,.3,1);}
+.nav-links a:hover::after,.nav-links a.current::after{transform:scaleX(1);transform-origin:left;}
+
+/* SNSアイコン */
+.hero-social a{transition:transform .5s cubic-bezier(.16,1,.3,1),background .3s,border-color .3s;}
+.hero-social a:hover{transform:translateY(-6px) rotate(-8deg) scale(1.14);
+  background:rgba(79,195,232,.18);border-color:var(--sky);}
+
+/* カルーセルを掴んで動かせるように */
+.carousel-track-outer{cursor:grab;}
+.carousel-track-outer.dragging{cursor:grabbing;}
+.carousel-track-outer.dragging .carousel-track,
+.carousel-track-outer.dragging .carousel-card{transition:none!important;}
+
+/* 動きを減らす設定の人には全部止める */
+@media(prefers-reduced-motion:reduce){
+  html.js-anim [data-anim],html.js-anim [data-anim="seq"]>*,.ln>i,
+  html.js-anim .hero-content>*{opacity:1!important;transform:none!important;
+    filter:none!important;clip-path:none!important;transition:none!important;}
+  html.js-anim [data-anim="wipe"]>*{transform:none!important;clip-path:none!important;}
+  .curtain{display:none;}
+  html.js-anim .section-label::before{transform:none!important;}
 }
 </style>
 </head>
@@ -874,6 +980,100 @@ footer .f-copy{font-size:11px;color:rgba(255,255,255,.25);letter-spacing:.1em;}
 </footer>
 
 <script>
+/* ===== モーション強化 ===== */
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* --- 見出しを1行ずつに分解する（<br>区切り） --- */
+  function splitLines(h){
+    if(!h || h.dataset.ln) return;
+    var parts = h.innerHTML.split(/<br\s*\/?>/i);
+    if(parts.length < 1) return;
+    h.innerHTML = parts.map(function(p,n){
+      return '<span class="ln" style="--l:'+n+'"><i>'+p+'</i></span>';
+    }).join('');
+    h.dataset.ln = '1';
+    h.classList.add('has-ln');
+  }
+
+  /* --- 登場の種類を割り当てる --- */
+  var WIPE = '.activity-visual,.about-photo,.podcast-img,.note-img';
+  var SEQ  = '.activity-content,.about-text,.podcast-content,.note-content';
+  var TILT = '.sns-card,.t-item,.mvv-card';
+
+  document.querySelectorAll(WIPE).forEach(function(el){ el.setAttribute('data-anim','wipe'); });
+  document.querySelectorAll(SEQ).forEach(function(el){
+    el.setAttribute('data-anim','seq');
+    [].forEach.call(el.children,function(c,n){ c.style.setProperty('--i', n); });
+    splitLines(el.querySelector('h2'));
+  });
+  document.querySelectorAll(TILT).forEach(function(el){
+    el.setAttribute('data-anim','tilt');
+    var sibs = el.parentElement ? [].indexOf.call(el.parentElement.children, el) : 0;
+    el.style.transitionDelay = (sibs % 6) * 85 + 'ms';
+  });
+  document.querySelectorAll('.story-quote').forEach(function(el){ el.setAttribute('data-anim','up'); });
+
+  /* セクション見出し（カルーセル欄など .reveal が付いていない場所）も拾う */
+  var extra = document.querySelectorAll('#pickup .section-label,#pickup h2,#blog h2,#soudan h2,#sns h2');
+  var io2 = new IntersectionObserver(function(es){
+    es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('show'); io2.unobserve(e.target); } });
+  },{threshold:.2});
+  extra.forEach(function(el){ io2.observe(el); });
+
+  /* 新しく付けた data-anim を監視する（既存の .reveal 監視とは別に） */
+  var io = new IntersectionObserver(function(es){
+    es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('show'); io.unobserve(e.target); } });
+  },{threshold:.12});
+  document.querySelectorAll('[data-anim]').forEach(function(el){ io.observe(el); });
+
+  /* --- ヒーローの登場順と、最初の幕 --- */
+  [].forEach.call(document.querySelectorAll('.hero-content > *'),function(c,n){
+    c.style.setProperty('--i', n);
+  });
+  var ht = document.querySelector('.hero-title');
+  splitLines(ht);
+
+  if(!reduce){
+    var cur = document.createElement('div');
+    cur.className = 'curtain';
+    document.body.appendChild(cur);
+    setTimeout(function(){ cur.remove(); }, 2200);
+  }
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){
+      document.body.classList.add('loaded');
+      if(ht) setTimeout(function(){ ht.classList.add('show'); }, 520);
+    });
+  });
+
+  /* --- 読み進みバー＋ヒーローのパララックス --- */
+  var bar = document.createElement('div');
+  bar.className = 'scroll-prog';
+  document.body.appendChild(bar);
+  var hc = document.querySelector('.hero-content');
+  var hb = document.querySelector('.hero-bg');
+  var ticking = false;
+  function onScroll(){
+    if(ticking) return;
+    ticking = true;
+    requestAnimationFrame(function(){
+      var y = window.scrollY;
+      var max = document.body.scrollHeight - window.innerHeight;
+      bar.style.width = (max > 0 ? (y / max) * 100 : 0) + '%';
+      if(!reduce && y < window.innerHeight * 1.2){
+        if(hc){ hc.style.transform = 'translateY(' + (y * .28) + 'px)'; hc.style.opacity = Math.max(0, 1 - y / (window.innerHeight * .78)); }
+        if(hb){ hb.style.transform = 'translateY(' + (y * .14) + 'px)'; }
+      }
+      ticking = false;
+    });
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+})();
+</script>
+
+<script>
 // Reveal
 const observer = new IntersectionObserver(entries => {
   entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('show'); });
@@ -909,13 +1109,51 @@ function renderCarousel(){
   track.style.transform = `translateX(-${current * cardW()}px)`;
   cards.forEach((el, i) => {
     const d   = i - current;
-    const rot = Math.max(-42, Math.min(42, -d * 15));
-    const z   = -Math.abs(d) * 90;
-    el.style.transform = `perspective(1400px) rotateY(${rot}deg) translateZ(${z}px) translateY(var(--lift,0px))`;
-    el.style.opacity   = Math.max(.35, 1 - Math.abs(d) * .22);
-    el.style.filter    = `brightness(${Math.max(.55, 1 - Math.abs(d) * .16)})`;
+    const ad  = Math.abs(d);
+    const rot = Math.max(-52, Math.min(52, -d * 22));
+    const z   = -ad * 150;
+    const y   = ad * 14;
+    el.style.transform = `perspective(1200px) rotateY(${rot}deg) translateZ(${z}px) translateY(calc(${y}px + var(--lift,0px)))`;
+    el.style.opacity   = Math.max(.28, 1 - ad * .26);
+    el.style.filter    = `brightness(${Math.max(.45, 1 - ad * .2)})`;
+    el.style.zIndex    = String(100 - ad);
   });
 }
+
+/* 掴んで動かす（マウスも指もOK） */
+const outer = track.parentElement;
+let startX = null, baseX = 0, moved = 0;
+
+outer.addEventListener('pointerdown', e => {
+  if (e.button && e.button !== 0) return;
+  startX = e.clientX;
+  baseX  = -current * cardW();
+  moved  = 0;
+  outer.classList.add('dragging');
+  try { outer.setPointerCapture(e.pointerId); } catch (_) {}
+});
+
+outer.addEventListener('pointermove', e => {
+  if (startX === null) return;
+  moved = e.clientX - startX;
+  track.style.transform = `translateX(${baseX + moved}px)`;
+});
+
+function endDrag(){
+  if (startX === null) return;
+  startX = null;
+  outer.classList.remove('dragging');
+  const steps = Math.round(-moved / cardW());
+  current = Math.max(0, Math.min(current + steps, maxIdx()));
+  renderCarousel();
+}
+outer.addEventListener('pointerup', endDrag);
+outer.addEventListener('pointercancel', endDrag);
+
+/* 動かしたときは、カードのリンクを開かない */
+outer.addEventListener('click', e => {
+  if (Math.abs(moved) > 6) { e.preventDefault(); e.stopPropagation(); moved = 0; }
+}, true);
 
 document.getElementById('nextBtn').addEventListener('click', () => {
   current = Math.min(current + 1, maxIdx());
