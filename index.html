@@ -1022,8 +1022,9 @@ html.js-anim body.loaded .hero-title{opacity:1;filter:none;transform:none;transi
   extra.forEach(function(el){ io2.observe(el); });
 
   /* 新しく付けた data-anim を監視する（既存の .reveal 監視とは別に） */
+  var fired = false;
   var io = new IntersectionObserver(function(es){
-    es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('show'); io.unobserve(e.target); } });
+    es.forEach(function(e){ if(e.isIntersecting){ fired = true; e.target.classList.add('show'); io.unobserve(e.target); } });
   },{threshold:.12});
   document.querySelectorAll('[data-anim]').forEach(function(el){ io.observe(el); });
 
@@ -1040,12 +1041,21 @@ html.js-anim body.loaded .hero-title{opacity:1;filter:none;transform:none;transi
     document.body.appendChild(cur);
     setTimeout(function(){ cur.remove(); }, 2200);
   }
-  requestAnimationFrame(function(){
-    requestAnimationFrame(function(){
-      document.body.classList.add('loaded');
-      if(ht) setTimeout(function(){ ht.classList.add('show'); }, 520);
-    });
-  });
+  function showHero(){
+    document.body.classList.add('loaded');
+    if(ht) setTimeout(function(){ ht.classList.add('show'); }, 520);
+  }
+  requestAnimationFrame(function(){ requestAnimationFrame(showHero); });
+  /* 保険：rAFが止まる環境（裏のタブなど）でも必ず出す */
+  setTimeout(showHero, 1500);
+
+  /* 最後の保険：7秒たっても一度も登場していなければ、
+     隠す仕組みごと解除して本文を必ず読める状態にする */
+  setTimeout(function(){
+    if(!fired && document.visibilityState === 'visible'){
+      document.documentElement.classList.remove('js-anim');
+    }
+  }, 7000);
 
   /* --- 読み進みバー＋ヒーローのパララックス --- */
   var bar = document.createElement('div');
