@@ -506,6 +506,52 @@ html.js-anim body.loaded .hero-title{opacity:1;filter:none;transform:none;transi
   .curtain{display:none;}
   html.js-anim .section-label::before{transform:none!important;}
 }
+/* ===== カルーセル：カードを直接選べるように ===== */
+.carousel-card{
+  opacity:var(--op,1);
+  filter:brightness(var(--br,1));
+  cursor:pointer;
+}
+/* 奥のカードにマウスを乗せたら、はっきり見せて「押せる」と分かるように */
+.carousel-card:not(.is-active):hover{--op:1;--br:1;}
+.carousel-card:not(.is-active):hover{--lift:-4px;}
+.carousel-card:focus-visible{outline:2px solid var(--sky);outline-offset:4px;--op:1;--br:1;}
+/* ===== フリースクール にいみ一歩 ===== */
+.fs-card{
+  position:relative;border:1px solid rgba(79,195,232,.28);border-radius:6px;
+  background:linear-gradient(155deg,#122840 0%,#0B1F33 58%,#081828 100%);
+  padding:46px 40px;overflow:hidden;
+}
+.fs-card::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(440px 240px at 12% 0%, rgba(79,195,232,.16), transparent 66%);
+}
+.fs-card>*{position:relative;}
+.fs-badge{
+  display:inline-block;font-size:10.5px;letter-spacing:.2em;color:var(--sky);
+  border:1px solid rgba(79,195,232,.4);background:rgba(79,195,232,.07);
+  border-radius:999px;padding:6px 15px;margin-bottom:26px;
+}
+.fs-lead{
+  font-family:'Shippori Mincho',serif;font-size:clamp(19px,2.3vw,25px);
+  color:var(--white);line-height:1.7;margin-bottom:28px;font-weight:600;
+}
+.fs-line{height:1px;background:linear-gradient(90deg,rgba(79,195,232,.5),transparent);margin-bottom:26px;}
+.fs-row{display:flex;gap:16px;font-size:13.5px;color:rgba(255,255,255,.74);margin-bottom:13px;line-height:1.75;}
+.fs-row span:first-child{flex:0 0 62px;font-size:9.5px;letter-spacing:.18em;color:var(--sky-deep);padding-top:5px;}
+.fs-tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:24px;}
+.fs-tags span{
+  font-size:11px;color:var(--sky);border:1px solid rgba(79,195,232,.35);
+  background:rgba(79,195,232,.06);border-radius:999px;padding:5px 13px;
+}
+.fs-note{
+  margin-top:26px;padding-top:19px;border-top:1px solid var(--line);
+  font-size:12.5px;color:rgba(255,255,255,.5);line-height:1.85;
+}
+.fs-mini{text-align:center;padding:0 16px;}
+.fs-mini .fs-mini-t{font-family:'Shippori Mincho',serif;font-size:21px;color:var(--white);line-height:1.5;margin-bottom:9px;}
+.fs-mini .fs-mini-s{font-size:9.5px;letter-spacing:.24em;color:var(--sky);}
+@media(max-width:880px){.fs-card{padding:34px 24px;}}
 </style>
 </head>
 <body>
@@ -653,6 +699,19 @@ html.js-anim body.loaded .hero-title{opacity:1;filter:none;transform:none;transi
               <div class="carousel-card-desc">心理学・脳科学をベースに、次世代の学びを届ける教育の場。</div>
             </div>
           </a>
+          <a class="carousel-card" href="#freeschool">
+            <div class="carousel-card-img" style="background:#0B1F33;">
+              <div class="fs-mini">
+                <div class="fs-mini-t">にいみ一歩</div>
+                <div class="fs-mini-s">FREE SCHOOL</div>
+              </div>
+            </div>
+            <div class="carousel-card-body">
+              <span class="carousel-card-tag">FREE SCHOOL</span>
+              <div class="carousel-card-title">フリースクール にいみ一歩</div>
+              <div class="carousel-card-desc">学校に行きづらさを感じている小中学生のための居場所。2026年9月開校。</div>
+            </div>
+          </a>
           <a class="carousel-card" href="#niimifarm">
             <div class="carousel-card-img"><img loading="lazy" src="img/photo-04.jpg" alt="にいみ農園"></div>
             <div class="carousel-card-body">
@@ -756,8 +815,51 @@ html.js-anim body.loaded .hero-title{opacity:1;filter:none;transform:none;transi
   </div>
 </section>
 
+<!-- フリースクール にいみ一歩 -->
+<section id="freeschool" class="activity-section bg-dark">
+  <div class="wrap">
+    <div class="activity-grid">
+      <div class="activity-visual reveal">
+        <!-- ▼ 写真ができたら、この <div class="fs-card"> 〜 </div> をまるごと
+             <img loading="lazy" src="img/xxx.jpg" alt="フリースクール にいみ一歩" style="border-radius:6px;">
+             に差し替えれば、他の事業と同じ見た目になります。 -->
+        <div class="fs-card">
+          <span class="fs-badge">2026.09 開校</span>
+          <div class="fs-lead">学校に行けない日も、<br>安心して過ごせる場所を。</div>
+          <div class="fs-line"></div>
+          <div class="fs-row"><span>対象</span><span>小学1年生 〜 中学3年生</span></div>
+          <div class="fs-row"><span>場所</span><span>栃木県下野市上古山583-3<br>石橋駅・雀宮駅・安塚駅より／駐車場あり</span></div>
+          <div class="fs-row"><span>運営</span><span>にいみ塾</span></div>
+          <div class="fs-tags">
+            <span>学習支援</span><span>メンタルケア</span><span>農園体験</span>
+          </div>
+          <div class="fs-note">見学・体験・相談は無料です。保護者の方だけのご相談も承っています。<br>通う頻度や過ごし方は、お子さまのペースに合わせて決められます。</div>
+        </div>
+      </div>
+      <div class="activity-content reveal">
+        <div class="section-label">Free School</div>
+        <h2>フリースクール<br>にいみ一歩</h2>
+        <p>学校に行きづらさを感じている小学生・中学生のための居場所です。まずは安心して過ごせることを大切にしながら、個別の学習やICT教材での学び直し、にいみ農園での農作業体験、読書や創作、運動などを、本人が選べるようにしています。生活リズムづくりや保護者面談、在籍校との連携のご相談にも対応しています。</p>
+        <div class="member-card">
+          <img loading="lazy" src="img/photo-07.jpg" alt="新見康樹">
+          <div><div class="role">フリースクール責任者</div><div class="name">新見 康樹</div><div class="bio">SBT2級メンタルコーチ。自身の不登校・うつ病の経験から、居場所づくりに取り組む。</div></div>
+        </div>
+        <div class="member-card">
+          <img loading="lazy" src="img/photo-08.jpg" alt="新見康之">
+          <div><div class="role">塾長</div><div class="name">新見 康之</div><div class="bio">SBT1級メンタルコーチ。にいみ塾を長く続けてきた教育者。</div></div>
+        </div>
+        <div class="activity-links">
+          <a class="a-btn a-btn-primary" href="https://niimi-freeschool.com/" target="_blank" rel="noopener">公式サイト</a>
+          <a class="a-btn a-btn-outline" href="https://lin.ee/YaNcoUza" target="_blank" rel="noopener">公式LINE</a>
+          <a class="a-btn a-btn-outline" href="tel:0120213107">0120-213-107</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- にいみ農園 -->
-<section id="niimifarm" class="activity-section bg-dark">
+<section id="niimifarm" class="activity-section bg-mid">
   <div class="wrap">
     <div class="activity-grid">
       <div class="activity-visual reveal">
@@ -784,7 +886,7 @@ html.js-anim body.loaded .hero-title{opacity:1;filter:none;transform:none;transi
 </section>
 
 <!-- BUZZBASE -->
-<section id="buzzbase" class="activity-section bg-mid">
+<section id="buzzbase" class="activity-section bg-dark">
   <div class="wrap">
     <div class="activity-grid">
       <div class="activity-content reveal">
@@ -803,14 +905,14 @@ html.js-anim body.loaded .hero-title{opacity:1;filter:none;transform:none;transi
         <!-- ▼ 写真ができたら、この <div class="bz-card"> 〜 </div> をまるごと
              <img loading="lazy" src="img/xxx.jpg" alt="BUZZBASE MEETUP" style="border-radius:6px;">
              に差し替えれば、他の事業と同じ見た目になります。
-             ▼ 開催回が変わったら VOL.03 / DATE / PLACE の3か所を書き換えてください。 -->
+             ▼ 開催回が変わったら VOL / DATE / PLACE の3か所を書き換えてください。 -->
         <div class="bz-card">
           <span class="bz-badge">INVITATION ONLY</span>
           <div class="bz-logo">BUZZBASE</div>
-          <div class="bz-vol">MEETUP&nbsp;&nbsp;VOL.03</div>
+          <div class="bz-vol">MEETUP&nbsp;&nbsp;VOL.04</div>
           <div class="bz-line"></div>
-          <div class="bz-row"><span>DATE</span><span>2026年9月25日（金）21:00</span></div>
-          <div class="bz-row"><span>PLACE</span><span>東京・渋谷</span></div>
+          <div class="bz-row"><span>DATE</span><span>2026年10月30日（金）19:00</span></div>
+          <div class="bz-row"><span>PLACE</span><span>東京・池尻大橋 BPM</span></div>
           <div class="bz-row"><span>FOR</span><span>インフルエンサー / 経営者</span></div>
           <div class="bz-host">主催：ハンくん（HANKUN）／ STREET PV</div>
         </div>
@@ -1111,22 +1213,30 @@ links.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
 // Carousel（3Dカバーフロー）
 const track = document.getElementById('carouselTrack');
 const cards  = [...track.querySelectorAll('.carousel-card')];
-let current  = 0;
+/* active = いま選ばれているカード。スクロール位置は端で止まるが、
+   選択そのものは最後のカードまで動かせるようにする。 */
+let active   = 0;
 const cardW  = () => cards[0].offsetWidth + 24;
 const maxIdx = () => Math.max(0, cards.length - Math.floor(track.parentElement.offsetWidth / cardW()));
+const clamp  = n => Math.max(0, Math.min(n, cards.length - 1));
 
 function renderCarousel(){
-  track.style.transform = `translateX(-${current * cardW()}px)`;
+  const off = Math.max(0, Math.min(active, maxIdx()));
+  track.style.transform = `translateX(-${off * cardW()}px)`;
   cards.forEach((el, i) => {
-    const d   = i - current;
+    const d   = i - active;
     const ad  = Math.abs(d);
     const rot = Math.max(-52, Math.min(52, -d * 22));
     const z   = -ad * 150;
     const y   = ad * 14;
     el.style.transform = `perspective(1200px) rotateY(${rot}deg) translateZ(${z}px) translateY(calc(${y}px + var(--lift,0px)))`;
-    el.style.opacity   = Math.max(.28, 1 - ad * .26);
-    el.style.filter    = `brightness(${Math.max(.45, 1 - ad * .2)})`;
-    el.style.zIndex    = String(100 - ad);
+    /* 透明度と明るさは変数で渡す。インラインで直接書くと、
+       CSS側のホバー指定が効かなくなるため。 */
+    el.style.setProperty('--op', Math.max(.28, 1 - ad * .26));
+    el.style.setProperty('--br', Math.max(.45, 1 - ad * .2));
+    el.style.zIndex = String(100 - ad);
+    el.classList.toggle('is-active', i === active);
+    el.setAttribute('aria-current', i === active ? 'true' : 'false');
   });
 }
 
@@ -1137,7 +1247,7 @@ let startX = null, baseX = 0, moved = 0;
 outer.addEventListener('pointerdown', e => {
   if (e.button && e.button !== 0) return;
   startX = e.clientX;
-  baseX  = -current * cardW();
+  baseX  = -Math.max(0, Math.min(active, maxIdx())) * cardW();
   moved  = 0;
   outer.classList.add('dragging');
   try { outer.setPointerCapture(e.pointerId); } catch (_) {}
@@ -1154,7 +1264,7 @@ function endDrag(){
   startX = null;
   outer.classList.remove('dragging');
   const steps = Math.round(-moved / cardW());
-  current = Math.max(0, Math.min(current + steps, maxIdx()));
+  active = clamp(Math.max(0, Math.min(active, maxIdx())) + steps);
   renderCarousel();
 }
 outer.addEventListener('pointerup', endDrag);
@@ -1165,18 +1275,33 @@ outer.addEventListener('click', e => {
   if (Math.abs(moved) > 6) { e.preventDefault(); e.stopPropagation(); moved = 0; }
 }, true);
 
+/* カードを直接クリックして選べるようにする。
+   選択されていないカードの1回目のクリックは「手前に持ってくる」だけで、
+   リンクは開かない。手前にあるカードはそのままリンクが開く。 */
+cards.forEach((el, i) => {
+  el.addEventListener('click', e => {
+    if (Math.abs(moved) > 6) return;   /* ドラッグ中は何もしない */
+    if (i !== active) {
+      e.preventDefault();
+      active = i;
+      renderCarousel();
+    }
+  });
+  /* キーボードで移動してきたときも手前に出す */
+  el.addEventListener('focus', () => {
+    if (i !== active) { active = i; renderCarousel(); }
+  });
+});
+
 document.getElementById('nextBtn').addEventListener('click', () => {
-  current = Math.min(current + 1, maxIdx());
+  active = clamp(active + 1);
   renderCarousel();
 });
 document.getElementById('prevBtn').addEventListener('click', () => {
-  current = Math.max(current - 1, 0);
+  active = clamp(active - 1);
   renderCarousel();
 });
-window.addEventListener('resize', () => {
-  current = Math.min(current, maxIdx());
-  renderCarousel();
-});
+window.addEventListener('resize', renderCarousel);
 renderCarousel();
 </script>
 
