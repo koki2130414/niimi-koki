@@ -506,8 +506,13 @@ html.js-anim body.loaded .hero-title{opacity:1;filter:none;transform:none;transi
   .curtain{display:none;}
   html.js-anim .section-label::before{transform:none!important;}
 }
-/* ===== カルーセル：カードを直接選べるように ===== */
+/* ===== カルーセル：カードを直接選べるように =====
+   奥に下げたカード(translateZ)は親の面より後ろに回り込むため、
+   親がクリックを横取りしてしまう。親を当たり判定から外し、
+   カードだけを対象にする。 */
+.carousel-track{pointer-events:none;}
 .carousel-card{
+  pointer-events:auto;
   opacity:var(--op,1);
   filter:brightness(var(--br,1));
   cursor:pointer;
@@ -552,6 +557,24 @@ html.js-anim body.loaded .hero-title{opacity:1;filter:none;transform:none;transi
 .fs-mini .fs-mini-t{font-family:'Shippori Mincho',serif;font-size:21px;color:var(--white);line-height:1.5;margin-bottom:9px;}
 .fs-mini .fs-mini-s{font-size:9.5px;letter-spacing:.24em;color:var(--sky);}
 @media(max-width:880px){.fs-card{padding:34px 24px;}}
+/* ===== カルーセル：位置を示す丸ボタン ===== */
+.carousel-dots{display:flex;gap:0;align-items:center;margin-left:12px;}
+/* ボタン自体を指で押せる大きさの箱にして、点は中に描く。
+   ::after で判定だけ広げると隣と重なり、別の丸が反応してしまう。 */
+.carousel-dots button{
+  width:30px;height:34px;padding:0;border:0;background:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+}
+.carousel-dots button::before{
+  content:'';width:8px;height:8px;border-radius:50%;
+  background:rgba(255,255,255,.3);transition:.35s cubic-bezier(.16,1,.3,1);
+}
+.carousel-dots button:hover::before{background:rgba(255,255,255,.65);}
+.carousel-dots button.on::before{background:var(--sky);width:20px;border-radius:999px;}
+.carousel-dots button:focus-visible{outline:2px solid var(--sky);outline-offset:2px;border-radius:4px;}
+/* 縦スクロールは残しつつ、横は自前のドラッグに使う */
+.carousel-track-outer{touch-action:pan-y;user-select:none;-webkit-user-select:none;}
+@media(max-width:880px){.carousel-dots{margin-left:6px;}.carousel-dots button{width:26px;}}
 </style>
 </head>
 <body>
@@ -1238,60 +1261,109 @@ function renderCarousel(){
     el.classList.toggle('is-active', i === active);
     el.setAttribute('aria-current', i === active ? 'true' : 'false');
   });
+  if (typeof dotEls !== 'undefined') {
+    dotEls.forEach((d, i) => d.classList.toggle('on', i === active));
+  }
 }
 
-/* 掴んで動かす（マウスも指もOK） */
+/* 掴んで動かす（マウスも指もOK）
+   注意：pointerdown の時点で setPointerCapture すると、そのあとの click の
+   宛先がカードから親要素に書き換わり、カードのクリック処理に届かなくなる。
+   そのため、実際に動き始めてから初めて掴み判定に入る。 */
 const outer = track.parentElement;
-let startX = null, baseX = 0, moved = 0;
+const DRAG_START = 6;           /* これ以上動いたら「ドラッグ」とみなす */
+let startX = null, baseX = 0, moved = 0, dragging = false, pid = null, downIdx = -1;
+
+/* 動いている間は window で受ける。setPointerCapture を使うと、
+   途中からイベントが親要素に届かなくなり pointerup も拾えなかった。 */
+function onMove(e){
+  if (startX === null) return;
+  moved = e.clientX - startX;
+  if (!dragging) {
+    if (Math.abs(moved) < DRAG_START) return;   /* まだクリックかもしれない */
+    dragging = true;
+    outer.classList.add('dragging');
+  }
+  /* ここで preventDefault すると、ブラウザがそのポインタの追跡を
+     打ち切ってしまう（pointermove も pointerup も来なくなる）。
+     横払いの制御は CSS の touch-action:pan-y に任せる。 */
+  track.style.transform = `translateX(${baseX + moved}px)`;
+}
+
+function endDrag(){
+  window.removeEventListener('pointermove', onMove);
+  window.removeEventListener('pointerup', endDrag);
+  window.removeEventListener('pointercancel', endDrag);
+  if (startX === null) return;
+  startX = null;
+  if (dragging){
+    outer.classList.remove('dragging');
+    const steps = Math.round(-moved / cardW());
+    active = clamp(Math.max(0, Math.min(active, maxIdx())) + steps);
+    renderCarousel();
+  }
+}
+
+/* カードは <a> なので、押して動かすとブラウザ標準の「リンクをドラッグ」が
+   始まり、dragstart -> pointercancel で自前のドラッグが打ち切られる。 */
+outer.addEventListener('dragstart', e => e.preventDefault());
 
 outer.addEventListener('pointerdown', e => {
   if (e.button && e.button !== 0) return;
-  startX = e.clientX;
-  baseX  = -Math.max(0, Math.min(active, maxIdx())) * cardW();
-  moved  = 0;
-  outer.classList.add('dragging');
-  try { outer.setPointerCapture(e.pointerId); } catch (_) {}
+  startX   = e.clientX;
+  baseX    = -Math.max(0, Math.min(active, maxIdx())) * cardW();
+  moved    = 0;
+  dragging = false;
+  pid      = e.pointerId;
+  const c  = e.target.closest ? e.target.closest('.carousel-card') : null;
+  downIdx  = c ? cards.indexOf(c) : -1;
+  window.addEventListener('pointermove', onMove);
+  window.addEventListener('pointerup', endDrag);
+  window.addEventListener('pointercancel', endDrag);
 });
 
-outer.addEventListener('pointermove', e => {
-  if (startX === null) return;
-  moved = e.clientX - startX;
-  track.style.transform = `translateX(${baseX + moved}px)`;
-});
-
-function endDrag(){
-  if (startX === null) return;
-  startX = null;
-  outer.classList.remove('dragging');
-  const steps = Math.round(-moved / cardW());
-  active = clamp(Math.max(0, Math.min(active, maxIdx())) + steps);
-  renderCarousel();
-}
-outer.addEventListener('pointerup', endDrag);
-outer.addEventListener('pointercancel', endDrag);
-
-/* 動かしたときは、カードのリンクを開かない */
+/* クリックの受け口はここ1か所にまとめる。
+   カードが押されたら、まず手前に持ってくる。すでに手前ならリンクを開く。 */
 outer.addEventListener('click', e => {
-  if (Math.abs(moved) > 6) { e.preventDefault(); e.stopPropagation(); moved = 0; }
+  if (dragging || Math.abs(moved) > DRAG_START) {   /* 動かしたときは開かない */
+    e.preventDefault(); e.stopPropagation();
+    moved = 0; dragging = false;
+    return;
+  }
+  const c = e.target.closest ? e.target.closest('.carousel-card') : null;
+  const i = c ? cards.indexOf(c) : downIdx;        /* 念のため押した位置も見る */
+  if (i >= 0 && i !== active) {
+    e.preventDefault(); e.stopPropagation();
+    active = i;
+    renderCarousel();
+  }
 }, true);
 
-/* カードを直接クリックして選べるようにする。
-   選択されていないカードの1回目のクリックは「手前に持ってくる」だけで、
-   リンクは開かない。手前にあるカードはそのままリンクが開く。 */
+/* キーボードで移動してきたときだけ手前に出す。
+   マウスで押したときにも効かせると、クリック処理より先に選択が変わってしまい、
+   「すでに手前にある」と判定されてリンクが開いてしまう。 */
 cards.forEach((el, i) => {
-  el.addEventListener('click', e => {
-    if (Math.abs(moved) > 6) return;   /* ドラッグ中は何もしない */
-    if (i !== active) {
-      e.preventDefault();
-      active = i;
-      renderCarousel();
-    }
-  });
-  /* キーボードで移動してきたときも手前に出す */
   el.addEventListener('focus', () => {
-    if (i !== active) { active = i; renderCarousel(); }
+    let kb = true;
+    try { kb = el.matches(':focus-visible'); } catch (_) {}
+    if (kb && i !== active) { active = i; renderCarousel(); }
   });
 });
+
+/* 位置を示す丸ボタン。スマホでは画面に1枚しか入らないため、
+   カードをクリックして選ぶことができない。その代わりの手段。 */
+const dots = document.createElement('div');
+dots.className = 'carousel-dots';
+cards.forEach((c, i) => {
+  const d = document.createElement('button');
+  d.type = 'button';
+  const t = c.querySelector('.carousel-card-title');
+  d.setAttribute('aria-label', (t ? t.textContent.trim() : (i + 1) + '枚目') + ' を表示');
+  d.addEventListener('click', () => { active = i; renderCarousel(); });
+  dots.appendChild(d);
+});
+document.querySelector('.carousel-nav').appendChild(dots);
+const dotEls = [...dots.children];
 
 document.getElementById('nextBtn').addEventListener('click', () => {
   active = clamp(active + 1);
