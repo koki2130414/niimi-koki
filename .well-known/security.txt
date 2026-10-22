@@ -1,0 +1,7 @@
+# koki213.com のセキュリティ連絡先
+# このサイトの不具合・脆弱性を見つけた方は、下記からご連絡ください。
+
+Contact: https://forms.gle/EVCxUyvZ6AGqiT4o6
+Preferred-Languages: ja, en
+Canonical: https://koki213.com/.well-known/security.txt
+Expires: 2027-10-21T00:00:00.000Z
