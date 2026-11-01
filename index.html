@@ -15,7 +15,14 @@
 <meta property="og:description" content="農業・教育・サッカーを軸に、子どもたちの夢への一歩に伴走する。">
 <meta property="og:locale" content="ja_JP">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="preload" as="image" href="img/photo-01.jpg">
+<meta property="og:image" content="https://koki213.com/img/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="稲穂の実った田んぼに立つ新見康樹">
+<meta name="twitter:image" content="https://koki213.com/img/og.jpg">
+<!-- ヒーロー写真。スマホは縦長で中央しか映らないため、軽い切り抜き版を使う -->
+<link rel="preload" as="image" href="img/photo-01.jpg" media="(min-width:701px)">
+<link rel="preload" as="image" href="img/photo-01-sp.jpg" media="(max-width:700px)">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
 <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;600;800&amp;family=Noto+Sans+JP:wght@300;400;500;700&amp;family=Cormorant+Garamond:ital,wght@0,500;1,500&amp;display=swap" rel="stylesheet">
@@ -73,9 +80,13 @@ body{font-family:'Noto Sans JP',sans-serif;color:var(--ink);background:#fff;over
 .hero-bg{
   position:absolute;inset:0;
   background-image:url('img/photo-01.jpg');
-  background-size:cover;background-position:center top;
+  background-size:cover;background-position:center center;
   transform:scale(1.04);
   animation:heroZoom 12s ease-out forwards;
+}
+/* スマホは画面が縦長で写真の中央しか映らないので、軽い切り抜き版に差し替える */
+@media(max-width:700px){
+  .hero-bg{background-image:url('img/photo-01-sp.jpg');}
 }
 @keyframes heroZoom{from{transform:scale(1.08);}to{transform:scale(1.0);}}
 .hero-overlay{
